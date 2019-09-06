@@ -1,0 +1,20 @@
+{
+  "name": "mscharl/changelog",
+  "description": "A changelog generator inspired by the Gitlab CE tools.",
+  "type": "package",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michael Scharl",
+      "email": "michael.scharl@me.com"
+    }
+  ],
+  "bin": [
+    "bin/changelog"
+  ],
+  "require": {
+    "symfony/console": "^4.0",
+    "symfony/process": "^4.0",
+    "symfony/yaml": "^4.0"
+  }
+}
