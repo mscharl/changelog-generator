@@ -1,3 +1,2 @@
-paths:
-  changes_file: CHANGES.md
-  unreleased_dir: changelog/unreleased
+changes_file: CHANGES.md
+unreleased_dir: changelog/unreleased

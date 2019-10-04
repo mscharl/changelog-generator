@@ -10,11 +10,9 @@ use Symfony\Component\Yaml\Yaml;
 class ChangelogConfiguration implements ConfigurationInterface
 {
     const DEFAULTS = [
-        'paths' => [
-            'unreleased_dir' => 'changelog/unreleased',
-            'changes_file' => 'CHANGELOG.md',
-        ],
-        'entry_template' => __DIR__ . '/../../templates/entry.md.twig'
+        'unreleased_dir' => 'changelog/unreleased',
+        'changes_file' => 'CHANGELOG.md',
+        'entry_template' => __DIR__ . '/../../templates/entry.md.twig',
     ];
 
     /**
@@ -31,7 +29,10 @@ class ChangelogConfiguration implements ConfigurationInterface
 
         $this->config = $configProcessor->processConfiguration(
             $this,
-            [self::DEFAULTS, $configYaml]
+            [
+                self::DEFAULTS,
+                $configYaml,
+            ]
         );
     }
 
@@ -42,7 +43,7 @@ class ChangelogConfiguration implements ConfigurationInterface
      */
     public function getChangesFilePath(): string
     {
-        return $this->config['paths']['changes_file'];
+        return $this->config['changes_file'];
     }
 
     /**
@@ -52,7 +53,7 @@ class ChangelogConfiguration implements ConfigurationInterface
      */
     public function getUnreleasedDirPath(): string
     {
-        return $this->config['paths']['unreleased_dir'];
+        return $this->config['unreleased_dir'];
     }
 
     /**
@@ -63,7 +64,7 @@ class ChangelogConfiguration implements ConfigurationInterface
     public function getEntryTemplate(): string
     {
         $value = $this->config['entry_template'];
-        if(file_exists($value)) {
+        if (file_exists($value)) {
             return file_get_contents($value);
         }
 
@@ -82,12 +83,8 @@ class ChangelogConfiguration implements ConfigurationInterface
         // @formatter:off
         $treeBuilder->getRootNode()
             ->children()
-                ->arrayNode('paths')
-                    ->children()
-                        ->scalarNode('unreleased_dir')->end()
-                        ->scalarNode('changes_file')->end()
-                    ->end()
-                ->end()
+                ->scalarNode('unreleased_dir')->end()
+                ->scalarNode('changes_file')->end()
                 ->scalarNode('entry_template')->end()
             ->end()
         ;
