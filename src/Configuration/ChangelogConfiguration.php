@@ -9,6 +9,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class ChangelogConfiguration implements ConfigurationInterface
 {
+    const DEFAULTS = [
+        'paths' => [
+            'unreleased_dir' => 'changelog/unreleased',
+            'changes_file' => 'CHANGELOG.md',
+        ],
+        'entry_template' => __DIR__ . '/../../templates/entry.md.twig'
+    ];
+
     /**
      * Holds the config tree.
      * @var array
@@ -23,7 +31,7 @@ class ChangelogConfiguration implements ConfigurationInterface
 
         $this->config = $configProcessor->processConfiguration(
             $this,
-            [$configYaml]
+            [self::DEFAULTS, $configYaml]
         );
     }
 
@@ -54,7 +62,12 @@ class ChangelogConfiguration implements ConfigurationInterface
      */
     public function getEntryTemplate(): string
     {
-        return $this->config['entry_template'];
+        $value = $this->config['entry_template'];
+        if(file_exists($value)) {
+            return file_get_contents($value);
+        }
+
+        return $value;
     }
 
     /**

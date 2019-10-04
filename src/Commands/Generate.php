@@ -2,12 +2,14 @@
 
 namespace MScharl\Changelog\Commands;
 
+use MScharl\Changelog\Configuration\EntryConfiguration;
 use SplFileObject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Yaml\Yaml;
 use Tightenco\Collect\Support\Collection;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 
 class Generate extends BaseCommand
 {
@@ -75,49 +77,36 @@ class Generate extends BaseCommand
         var_dump($output);
     }
 
+    /**
+     * Load all unreleased entries and compile them to usable lines.
+     *
+     * @return array
+     */
     private function getChanges()
     {
+        // Create the Twig renderer.
+        $loader = new ArrayLoader(['entry' => $this->config->getEntryTemplate()]);
+        $twig = new Environment($loader);
+
+        // Fetch all change entries.
         $path = $this->config->getUnreleasedDirPath();
+        $entries = Collection::make(scandir($path));
 
-        return Collection::make(scandir($path))
-            ->filter(
-                function ($filename) {
-                    return $filename !== '.' && $filename !== '..';
-                }
-            )
-            ->map(
-                function ($filename) use ($path) {
-                    return Yaml::parseFile($path.'/'.$filename);
-                }
-            )
-            ->map(
-                function ($data) {
-                    $data['type'] = mb_convert_case($data['type'], MB_CASE_UPPER);
-                    $other = $data['other'];
-                    unset($data['other']);
+        return $entries
+            ->map(function (string $filename) use ($path) {
+                return $path . '/' . $filename;
+            })
+            ->filter(function (string $filePath) {
+                return is_file($filePath);
+            })
+            ->map(function (string $entryFile) use ($twig) {
+                $entry = new EntryConfiguration($entryFile);
 
-                    $keys = array_map(
-                        function ($key) {
-                            return '{'.$key.'}';
-                        },
-                        array_keys($data)
-                    );
-
-                    return "\n".implode(
-                            "\n",
-                            array_merge(
-                                [
-                                    str_replace($keys, array_values($data), $this->config->getEntryTemplate()),
-                                ],
-                                array_map(
-                                    function ($otherLine) {
-                                        return '    - '.$otherLine;
-                                    },
-                                    array_values($other)
-                                )
-                            )
-                        )."\n";
-                }
-            )->values()->toArray();
+                return trim(
+                    $twig->render('entry', $entry->getData())
+                );
+            })
+            ->values()
+            ->toArray();
     }
 }
