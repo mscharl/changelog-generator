@@ -1,18 +1,15 @@
 <?php
 
-
 namespace MScharl\Changelog\Commands;
 
-
 use SplFileObject;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 use Tightenco\Collect\Support\Collection;
 
-class Generate extends Command
+class Generate extends BaseCommand
 {
 
     /**
@@ -31,8 +28,7 @@ class Generate extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        $file = getcwd().'/CHANGES.md';
-        $file = new SplFileObject($file);
+        $file = new SplFileObject($this->config->getChangesFilePath());
         $changelog = [];
 
         $lastHeadline = null;
@@ -67,23 +63,21 @@ class Generate extends Command
             $changelog
         );
 
-        $output = trim(
-                array_reduce(
-                    array_keys($changelog),
-                    function (string $carry, string $headline) use ($changelog) {
-                        $lines = $changelog[$headline];
+        $output = array_reduce(
+            array_keys($changelog),
+            function (string $carry, string $headline) use ($changelog) {
+                $lines = $changelog[$headline];
 
-                        return implode("\n", [$carry, $headline, $lines]);
-                    },
-                    ''
-                )
-            )."\n";
+                return implode("\n", [$carry, $headline, $lines]);
+            },
+            ''
+        );
         var_dump($output);
     }
 
     private function getChanges()
     {
-        $path = getcwd().'/changelog/unreleased';
+        $path = $this->config->getUnreleasedDirPath();
 
         return Collection::make(scandir($path))
             ->filter(
@@ -108,13 +102,12 @@ class Generate extends Command
                         },
                         array_keys($data)
                     );
-                    $template = '- {type}: {title} [#{ticket_id}]({trello_ticket}) [!{merge_request_id}]';
 
                     return "\n".implode(
                             "\n",
                             array_merge(
                                 [
-                                    str_replace($keys, array_values($data), $template),
+                                    str_replace($keys, array_values($data), $this->config->getEntryTemplate()),
                                 ],
                                 array_map(
                                     function ($otherLine) {
