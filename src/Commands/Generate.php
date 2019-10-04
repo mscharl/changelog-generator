@@ -74,6 +74,9 @@ class Generate extends BaseCommand
             ->map(function (string $entryFile) use ($twig) {
                 $entry = new EntryConfiguration($entryFile);
 
+                // Remove the processed file.
+                unlink($entryFile);
+
                 return trim(
                     $twig->render('entry', $entry->getData())
                 );
