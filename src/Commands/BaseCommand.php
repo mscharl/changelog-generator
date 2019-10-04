@@ -1,8 +1,6 @@
 <?php
 
-
 namespace MScharl\Changelog\Commands;
-
 
 use MScharl\Changelog\Configuration\ChangelogConfiguration;
 use Symfony\Component\Console\Command\Command;

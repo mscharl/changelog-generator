@@ -5,6 +5,7 @@ namespace MScharl\Changelog\Commands;
 use MScharl\Changelog\Configuration\EntryConfiguration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Tightenco\Collect\Support\Collection;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
@@ -26,6 +27,8 @@ class Generate extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+
         // Load the current changes file.
         $file = file_get_contents($this->config->getChangesFilePath());
 
@@ -43,10 +46,22 @@ class Generate extends BaseCommand
             $previousChanges = "\n" . $previousChanges;
         }
 
-        // Concatenate the parts of the changelog.
-        $changelog = $head . $unreleasedHeadline . implode("\n", $this->getChanges()) . $previousChanges;
+        $changes = $this->getChanges();
 
-        file_put_contents($this->config->getChangesFilePath(), $changelog);
+        if (count($changes) > 0) {
+            // Concatenate the parts of the changelog.
+            $changelog = $head . $unreleasedHeadline . implode("\n", $changes) . $previousChanges;
+
+            file_put_contents($this->config->getChangesFilePath(), $changelog);
+        }
+
+        $io->block(
+            'The Changes file was updated with ' . count($changes) . ' new entries.',
+            '✔︎',
+            'fg=black;bg=green',
+            ' ',
+            true
+        );
     }
 
     /**
