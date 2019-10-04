@@ -3,22 +3,17 @@
 namespace MScharl\Changelog\Commands;
 
 use MScharl\Changelog\Configuration\EntryConfiguration;
-use SplFileObject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Tightenco\Collect\Support\Collection;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
 class Generate extends BaseCommand
 {
-
     /**
-     * @var SymfonyStyle
+     * @inheritDoc
      */
-    protected $io;
-
     protected function configure()
     {
         $this
@@ -26,55 +21,32 @@ class Generate extends BaseCommand
             ->setDescription('Adds all unreleased changes to the changelog file.');
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->io = new SymfonyStyle($input, $output);
+        // Load the current changes file.
+        $file = file_get_contents($this->config->getChangesFilePath());
 
-        $file = new SplFileObject($this->config->getChangesFilePath());
-        $changelog = [];
+        // Get the exact changes headline.
+        $unreleasedMatch = [];
+        preg_match('/#+\s*unreleased\s*/im', $file, $unreleasedMatch);
 
-        $lastHeadline = null;
-        $unreleasedHeadline = null;
-        while (!$file->eof()) {
-            $line = $file->fgets();
+        // Split the log and store the head, changes headline and previous changes.
+        $unreleasedHeadline = $unreleasedMatch[0];
+        list($head, $previousChanges) = preg_split('/#+\s*unreleased\s*/im', $file);
 
-            if (preg_match('/^#+/', $line)) {
-                $lastHeadline = trim($line);
-                $changelog[$lastHeadline] = [];
-                if (preg_match('/unreleased/i', $lastHeadline)) {
-                    $unreleasedHeadline = $lastHeadline;
-                }
-            } else {
-                $changelog[$lastHeadline][] = trim($line);
-            }
+        if (preg_match('/^#/', $previousChanges)) {
+            $previousChanges = "\n\n" . $previousChanges;
+        } else {
+            $previousChanges = "\n" . $previousChanges;
         }
 
-        $changelog[$unreleasedHeadline] = array_filter(
-            $changelog[$unreleasedHeadline],
-            function ($value) {
-                return !empty(trim($value));
-            }
-        );
+        // Concatenate the parts of the changelog.
+        $changelog = $head . $unreleasedHeadline . implode("\n", $this->getChanges()) . $previousChanges;
 
-        $changelog[$unreleasedHeadline] = array_merge($this->getChanges(), $changelog[$unreleasedHeadline]);
-
-        $changelog = array_map(
-            function (array $lines) {
-                return implode("\n", $lines);
-            },
-            $changelog
-        );
-
-        $output = array_reduce(
-            array_keys($changelog),
-            function (string $carry, string $headline) use ($changelog) {
-                $lines = $changelog[$headline];
-
-                return implode("\n", [$carry, $headline, $lines]);
-            },
-            ''
-        );
-        var_dump($output);
+        file_put_contents($this->config->getChangesFilePath(), $changelog);
     }
 
     /**
