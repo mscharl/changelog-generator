@@ -10,7 +10,7 @@
     }
   ],
   "bin": [
-    "changelog"
+    "src/changelog"
   ],
   "require": {
     "symfony/console": "^4.0",
