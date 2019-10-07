@@ -2,6 +2,7 @@
 
 namespace MScharl\Changelog\Commands;
 
+use Exception;
 use MScharl\Changelog\Configuration\EntryConfiguration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -68,6 +69,8 @@ class Generate extends BaseCommand
      * Load all unreleased entries and compile them to usable lines.
      *
      * @return array
+     *
+     * @throws Exception
      */
     private function getChanges()
     {
@@ -77,6 +80,10 @@ class Generate extends BaseCommand
 
         // Fetch all change entries.
         $path = $this->config->getUnreleasedDirPath();
+        if (!is_dir($path)) {
+            throw new Exception(sprintf('"%s" is not a directory.', getcwd() . '/' . $path));
+        }
+
         $entries = Collection::make(scandir($path));
 
         return $entries
