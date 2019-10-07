@@ -11,7 +11,7 @@ class ChangelogConfiguration implements ConfigurationInterface
 {
     const DEFAULTS = [
         'unreleased_dir' => 'changelog/unreleased',
-        'changes_file' => 'CHANGELOG.md',
+        'changes_file' => 'CHANGES.md',
         'entry_template' => __DIR__ . '/../../templates/entry.md.twig',
     ];
 
@@ -23,7 +23,8 @@ class ChangelogConfiguration implements ConfigurationInterface
 
     public function __construct(string $configFile)
     {
-        $configYaml = Yaml::parseFile($configFile);
+        $configYaml = file_exists($configFile) ? Yaml::parseFile($configFile) : null;
+        $configYaml = null === $configYaml ? [] : $configYaml;
 
         $configProcessor = new Processor();
 
