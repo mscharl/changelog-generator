@@ -4,6 +4,8 @@ This is some text for testing the package within it's own project.
 
 ## Unreleased
 
+## 2019-10-15 1.1.0
+
 - BUGFIX: The generator accepted empty files which lead to incomplete lines in the changelog. Changelog entries without title and type trigger an error now.
 - ENHANCEMENT: Added a filter to ignore hidden file in the generation process.
 
