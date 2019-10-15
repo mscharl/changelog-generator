@@ -91,7 +91,7 @@ class Generate extends BaseCommand
                 return $path . '/' . $filename;
             })
             ->filter(function (string $filePath) {
-                return is_file($filePath);
+                return !preg_match('/^\./', basename($filePath)) && is_file($filePath);
             })
             ->map(function (string $entryFile) use ($twig) {
                 $entry = new EntryConfiguration($entryFile);
