@@ -1,4 +1,4 @@
-- {{ type|upper }}: {{ title }} [#{{ ticket_id }}]({{ ticket_url }}){{ merge_request_id ? ' [!' ~ merge_request_id ~ ']' }}
+- {{ type|upper }}: {{ title }} {{ ticket_id|default and ticket_url|default ? '[#' ~ ticket_id ~ '](' ~ ticket_url ~ ')' }}{{ merge_request_id ? ' [!' ~ merge_request_id ~ ']' }}
 {% for item in other %}
     - {{ item }}
 {% endfor %}

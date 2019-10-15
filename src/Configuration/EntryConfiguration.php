@@ -50,8 +50,8 @@ class EntryConfiguration implements ConfigurationInterface
         $treeBuilder
             ->getRootNode()
             ->children()
-            ->scalarNode('type')->end()
-            ->scalarNode('title')->end()
+            ->scalarNode('type')->isRequired()->end()
+            ->scalarNode('title')->isRequired()->end()
             ->scalarNode('ticket_id')->end()
             ->scalarNode('ticket_url')->end()
             ->scalarNode('merge_request_id')->end()
