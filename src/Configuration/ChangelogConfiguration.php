@@ -17,10 +17,14 @@ class ChangelogConfiguration implements ConfigurationInterface
 
     /**
      * Holds the config tree.
+     * 
      * @var array
      */
     protected $config;
 
+    /**
+     * @param string $configFile
+     */
     public function __construct(string $configFile)
     {
         $configYaml = file_exists($configFile) ? Yaml::parseFile($configFile) : null;
@@ -58,7 +62,7 @@ class ChangelogConfiguration implements ConfigurationInterface
     }
 
     /**
-     * The template for a single changelog entry..
+     * The template for a single changelog entry.
      *
      * @return string
      */
@@ -77,7 +81,7 @@ class ChangelogConfiguration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('changelog');
 

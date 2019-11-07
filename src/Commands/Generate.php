@@ -72,7 +72,7 @@ class Generate extends BaseCommand
      *
      * @throws Exception
      */
-    private function getChanges()
+    private function getChanges(): array
     {
         // Create the Twig renderer.
         $loader = new ArrayLoader(['entry' => $this->config->getEntryTemplate()]);
@@ -103,7 +103,6 @@ class Generate extends BaseCommand
                     $twig->render('entry', $entry->getData())
                 );
             })
-            ->values()
-            ->toArray();
+            ->getValues();
     }
 }

@@ -5,12 +5,12 @@ This package is inspired by the [Gitlab changelog tools](https://docs.gitlab.com
 
 ## Creating a changelog entry
 
-A new line for the changelog is created for each file found in your configured `unrelease_dir`.
+A new line for the changelog is created for each file found in your configured `unreleased_dir`.
 
 The file is created like this:
 ```yaml
 type: 'FEATURE'
-title: 'We added a new command to dynamically create changelog lines to avoid merge confilcts between feature branches.'
+title: 'We added a new command to dynamically create changelog lines to avoid merge conflicts between feature branches.'
 ticket_id: 717
 ticket_url: 'https://my-ticket.system/ticket/7f7241a2-b9ce-4218-9187-ddc58782ba37'
 merge_request_id: 6615
@@ -27,6 +27,7 @@ composer require mscharl/changelog
 Add the [configuration](#configuration) and [entry template](#entry-template) as required.
 
 ## Configuration
+
 To configure the generator you can put a `.changelog.yaml` into you project root.
 ```yaml
 # The path to the changes file that will be generated.
