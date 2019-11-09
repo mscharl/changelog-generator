@@ -14,6 +14,9 @@ abstract class BaseCommand extends Command
      */
     protected $config;
 
+    /**
+     * @param string|null $name
+     */
     public function __construct(string $name = null)
     {
         $this->config = new ChangelogConfiguration(getcwd() . '/' . self::SETTINGS_FILE_NAME);

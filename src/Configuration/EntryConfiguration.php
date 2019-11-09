@@ -9,7 +9,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class EntryConfiguration implements ConfigurationInterface
 {
-
     /**
      * @var array
      */
@@ -20,6 +19,9 @@ class EntryConfiguration implements ConfigurationInterface
      */
     private $entryName;
 
+    /**
+     * @param string $entryFile
+     */
     public function __construct(string $entryFile)
     {
         $this->entryName = basename($entryFile, '.yaml');
@@ -33,6 +35,9 @@ class EntryConfiguration implements ConfigurationInterface
         );
     }
 
+    /**
+     * @return array
+     */
     public function getData(): array
     {
         return $this->config;
@@ -43,7 +48,7 @@ class EntryConfiguration implements ConfigurationInterface
      *
      * @return TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder($this->entryName);
 
