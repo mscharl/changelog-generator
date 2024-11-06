@@ -18,7 +18,7 @@
     "symfony/yaml": "^4.0",
     "tightenco/collect": "^6.1",
     "symfony/config": "^4.0",
-    "twig/twig": "^2.0"
+    "twig/twig": "^3.11"
   },
   "autoload": {
     "psr-4": {
